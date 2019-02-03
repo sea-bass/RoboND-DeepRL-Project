@@ -117,6 +117,6 @@ $ chmod u+x gazebo-arm.sh
 $ ./gazebo-arm.sh
 ```
 
-<img src="https://github.com/sea-bass/RoboND-DeepRL-Project/raw/master/videos/RoboND-DeepRL-GripperBase.mp4">
+<img src="https://github.com/sea-bass/RoboND-DeepRL-Project/raw/master/videos/RoboND-DeepRL-GripperBar.mp4">
 
 The plugins which hook the learning into the simulation are located in the `gazebo/` directory of the repo. The RL agent and the reward functions are to be defined in [`ArmPlugin.cpp`](gazebo/ArmPlugin.cpp).
