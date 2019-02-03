@@ -19,6 +19,8 @@
 // True = Only get reward from touching tube with the gripper base
 // False = Get reward from any part of the arm touching the gripper base
 #define GRIPPER_BASE_MODE true
+// Randomize prop location
+#define RANDOMIZE_PROP false
 
 // Turn on velocity based control
 #define VELOCITY_CONTROL true
@@ -32,7 +34,11 @@
 #define GAMMA 0.95f
 #define EPS_START 0.9f
 #define EPS_END 0.05f
-#define EPS_DECAY 200
+#ifdef RANDOMIZE_PROP
+	#define EPS_DECAY 500
+#else
+	#define EPS_DECAY 200
+#endif
 
 // MODIFIED - Tune the following hyperparameters
 #define INPUT_WIDTH   256
@@ -40,7 +46,11 @@
 #define OPTIMIZER "Adam"
 #define LEARNING_RATE 0.001f
 #define REPLAY_MEMORY 5000
-#define BATCH_SIZE 16
+#ifdef RANDOMIZE_PROP
+	#define BATCH_SIZE 32
+#else
+	#define BATCH_SIZE 16
+#endif
 #define USE_LSTM false
 #define LSTM_SIZE 4
 
@@ -434,7 +444,11 @@ bool ArmPlugin::updateJoints()
 		}
 		else if( animationStep == ANIMATION_STEPS / 2 )
 		{	
-			ResetPropDynamics();
+            #ifdef RANDOMIZE_PROP
+				RandomizeProps();
+            #else
+          		ResetPropDynamics();
+            #endif
 		}
 
 		return true;
