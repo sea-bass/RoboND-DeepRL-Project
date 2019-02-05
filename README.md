@@ -25,8 +25,9 @@ The reward function consists of 3 components:
 * Winning reward (if object is reached): +50
 * Interim reward: `10*avgGoalDist - 1`
 
-where `avgGoalDist = alpha*goalDist - (1-alpha)*avgGoalDist`
-and `alpha` = 0.5
+where `avgGoalDist = alpha*goalDist - (1-alpha)*avgGoalDist` and `alpha` = 0.5
+
+The interim reward was designed such that moving towards the goal would increase reward, while every time step that the agent is active is penalized to encourage quickly moving towards the goal.
 
 NOTE: For the case where only the gripper base should touch the object, a winning reward of +50 is received if the gripper base collides with the object, and a "neutral" reward of 0 is received if another link of the arm collides with the object. This is done because it is a preferable outcome to timing out or hitting the ground.
 
@@ -40,7 +41,7 @@ Training is done with the [Adam optimizer](https://arxiv.org/abs/1412.6980), wit
 | Experience buffer size | 5000 |
 | Mini-batch size    | 16    |
 
-The agent uses a discount factor is 0.95, meaning the estimated value is halved in approximately 13.5 steps.The agent explores using an epsilon-greedy approach, meaning it selects a random action with an initial probability of 0.9, which decays to a minimum of 0.05 after 200 training episodes.
+The agent uses a discount factor of 0.95, meaning the estimated value is halved in approximately 13.5 steps.The agent explores using an epsilon-greedy approach, meaning it selects a random action with an initial probability of 0.9, which decays to a minimum of 0.05 after 200 training episodes.
 
 | Agent parameter    | Value |
 |--------------------|-------|
@@ -68,7 +69,7 @@ Experiment 1 can be enabled by setting the `GRIPPER_BASE_MODE` macro to `false`.
 
 Refer to [this video](https://github.com/sea-bass/RoboND-DeepRL-Project/blob/master/videos/RoboND_DeepRL_AnyLink.mp4).
 
-![Experiment 1](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
+![Experiment 1](https://github.com/sea-bass/RoboND-DeepRL-Project/blob/master/videos/Screenshot_AnyLink.png)
 
 ### Experiment 2: Gripper Base Only
 In the second experiment, we allowed only the gripper base link to collide with the object to consider the episode a win. However, a collision with other parts of the arm issued zero reward instead of the negative loss reward. This led to 90% accuracy after 100 episodes. 
@@ -77,7 +78,7 @@ Experiment 2 can be enabled by setting the `GRIPPER_BASE_MODE` macro to `true`, 
 
 Refer to [this video](https://github.com/sea-bass/RoboND-DeepRL-Project/blob/master/videos/RoboND_DeepRL_GripperBar.mp4).
 
-![Experiment 2](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
+![Experiment 2](https://github.com/sea-bass/RoboND-DeepRL-Project/blob/master/videos/Screenshot_GripperBase.png)
 
 ### Experiment 3: Random Prop Location
 We attempted randomizing the initial object location, which required more training. After 400 episodes, accuracy was still below 10%, so there is an opportunity for improvement. Refer to the next section for more details on these results.
@@ -86,11 +87,11 @@ Experiment 3 can be enabled by setting the `RANDOMIZE_PROP` macro to `true`. Not
 
 Refer to [this video](https://github.com/sea-bass/RoboND-DeepRL-Project/blob/master/videos/RoboND_DeepRL_RandomProp.mp4).
 
-![Experiment 2](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
+![Experiment 2](https://github.com/sea-bass/RoboND-DeepRL-Project/blob/master/videos/Screenshot_RandomProp.png)
 
 ## Future Work / Conclusion
-Randomizing the initial object location and moving to 3DOF, will require more training steps, more data, and maybe higher image resolution. Was running out of memory on GPU.
+**Scaling Up**: As seen in the results section above, the basic experiments with the 2 degree-of-freedom (DOF) arm and a static object succeeded with at least 90% accuracy. However, there is a future opportunity to train the object with random initial object location as well as moving to the full 3DOF arm case, where the arm can yaw around its base and the gripper can therefore access objects at nonzero Y locations. This will require more training steps, more data, and perhaps higher image resolution and a different neural network architecture.
 
-Changing default neural network structure.
+**Rearchitecting the DQN**: Changing the default neural network structure could lead to more interesting results, especially with more complicated problems like random initial object location and higher DOF. This could mean changing the input image size, adding more convolutional layers and changing the filter parameters, and adding fully-connected layers after the convolutional layers. A bigger network in theory would lead to higher accuracy, but it would take longer to train, require more data, and potentially run into issues due to the larger memory usage.
 
-Using continuous outputs with agents like DDPG, PPO, etc.
+**Changing the action space**: Discrete-action agents like DQN can work well for low-dimensional problems. However, a robot arm is inherently a continuous system, so discretizing leads to a loss in control precision for the arm. It would be interesting to explore other RL agents that support continuous outputs such as [Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/abs/1509.02971) and [Proximal Policy Optimization (PPO)](https://arxiv.org/abs/1707.06347).
